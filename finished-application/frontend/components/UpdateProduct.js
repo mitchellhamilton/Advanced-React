@@ -6,7 +6,7 @@ import Form from './styles/Form';
 
 const SINGLE_PRODUCT_QUERY = gql`
   query SINGLE_PRODUCT_QUERY($id: ID!) {
-    Product(where: { id: $id }) {
+    product(where: { id: $id }) {
       id
       name
       description
@@ -23,7 +23,7 @@ const UPDATE_PRODUCT_MUTATION = gql`
     $price: Int
   ) {
     updateProduct(
-      id: $id
+      where: { id: $id }
       data: { name: $name, description: $description, price: $price }
     ) {
       id
@@ -46,7 +46,7 @@ export default function UpdateProduct({ id }) {
   ] = useMutation(UPDATE_PRODUCT_MUTATION);
   // 2.5 Create some state for the form inputs:
   const { inputs, handleChange, clearForm, resetForm } = useForm(
-    data?.Product || {
+    data?.product || {
       name: '',
       description: '',
       price: '',

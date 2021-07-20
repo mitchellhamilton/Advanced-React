@@ -29,7 +29,7 @@ async function checkout(
   // 1.5 Query the current user
   const user = await context.lists.User.findOne({
     where: { id: userId },
-    resolveFields: graphql`
+    query: graphql`
       id
       name
       email
@@ -83,20 +83,19 @@ async function checkout(
   })
   console.log('gonna create the order')
   // 5. Create the order and return it
-  const order = await context.lists.Order.createOne({
+  const order = await context.db.lists.Order.createOne({
     data: {
       total: charge.amount,
       charge: charge.id,
       items: { create: orderItems },
       user: { connect: { id: userId }}
     },
-    resolveFields: false,
   });
   // 6. Clean up any old cart item
   const cartItemIds = user.cart.map(cartItem => cartItem.id);
   console.log('gonna create delete cartItems')
   await context.lists.CartItem.deleteMany({
-    ids: cartItemIds
+    where: cartItemIds.map(id => ({ id }))
   });
   return order;
 }
